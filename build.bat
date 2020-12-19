@@ -1,2 +1,5 @@
 @echo off
-gcc main.c -o app
+@SET FLAGS = "-lgdi32"
+
+gcc -o app main.c -lgdi32
+app

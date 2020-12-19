@@ -1,12 +1,14 @@
 #include <windows.h>
+// #include <stdlib.h>
+#include "util.c"
 
-#define true 1
-#define false 0
-#define global_variable static
-#define internal static
+typedef struct {
+    int width, height;
+    u32 *pixels;
+    BITMAPINFO bitmap_info;
+} Render_Buffer;
 
-// state of the window for the main loop
-static int running = true;
+global_variable Render_Buffer render_buffer;
 
 // message callback from window
 LRESULT window_callback(
@@ -21,6 +23,34 @@ LPARAM l_param) {
         case WM_CLOSE:
         case WM_DESTROY: {
             running = false;
+        } break;
+        case WM_SIZE: {
+            // get width and height from the window
+            RECT rect;
+            GetWindowRect(window, &rect);
+            render_buffer.width = rect.right - rect.left;
+            render_buffer.height = rect.bottom - rect.top;
+
+            // alocate to buffer
+            if(render_buffer.pixels) {
+                VirtualFree(render_buffer.pixels, 0, MEM_RELEASE);
+            }
+
+            render_buffer.pixels = VirtualAlloc(
+                0,
+                sizeof(u32) * render_buffer.width * sizeof(u32) * render_buffer.height,
+                MEM_COMMIT|MEM_RESERVE,
+                PAGE_READWRITE);
+
+            // fill the bitmapinfo
+            render_buffer.bitmap_info.bmiHeader.biSize = sizeof(render_buffer.bitmap_info.bmiHeader);
+            render_buffer.bitmap_info.bmiHeader.biWidth = render_buffer.width;
+            render_buffer.bitmap_info.bmiHeader.biHeight =- render_buffer.height;
+            render_buffer.bitmap_info.bmiHeader.biPlanes = 1;
+            render_buffer.bitmap_info.bmiHeader.biBitCount = 32;
+            render_buffer.bitmap_info.bmiHeader.biCompression = BI_RGB;
+            // render_buffer.bitmap_info.bmiHeader.bi = 32;
+
         } break;
         default: {
             result = DefWindowProcA(window, message, w_param, l_param);
@@ -57,6 +87,8 @@ int WinMain(
         false // Additional application data
     );
 
+    HDC hdc = GetDC(window);
+
     if(window == NULL)
         return false;
 
@@ -70,7 +102,21 @@ int WinMain(
         }
 
         // simulation
+        int width, height;
+        void * memory;
+        BITMAPINFO bitmap_info;
 
         // render
+        StretchDIBits(
+            hdc, // canvas
+            0, 0, // position
+            render_buffer.width, render_buffer.height, // size position
+            0, 0, // buffer position
+            render_buffer.width, render_buffer.height, // buffer size
+            render_buffer.pixels, // memory
+            &render_buffer.bitmap_info, // image data
+            DIB_RGB_COLORS,
+            SRCCOPY
+        );
     }
 };
