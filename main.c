@@ -1,14 +1,13 @@
 #include <windows.h>
 // #include <stdlib.h>
 #include "util.c"
+#include "render.c"
 
-typedef struct {
-    int width, height;
-    u32 *pixels;
-    BITMAPINFO bitmap_info;
-} Render_Buffer;
+// screen buffer
+Render_Buffer render_buffer;
 
-global_variable Render_Buffer render_buffer;
+// state of the window for the main loop
+int running = true;
 
 // message callback from window
 LRESULT window_callback(
@@ -49,8 +48,6 @@ LPARAM l_param) {
             render_buffer.bitmap_info.bmiHeader.biPlanes = 1;
             render_buffer.bitmap_info.bmiHeader.biBitCount = 32;
             render_buffer.bitmap_info.bmiHeader.biCompression = BI_RGB;
-            // render_buffer.bitmap_info.bmiHeader.bi = 32;
-
         } break;
         default: {
             result = DefWindowProcA(window, message, w_param, l_param);
@@ -93,7 +90,7 @@ int WinMain(
         return false;
 
     while(running){
-        // input
+        // Input
         MSG message;
 
         while(PeekMessageA(&message, window, 0, 0, PM_REMOVE)) {
@@ -101,12 +98,10 @@ int WinMain(
             DispatchMessage(&message);
         }
 
-        // simulation
-        int width, height;
-        void * memory;
-        BITMAPINFO bitmap_info;
+        // Simulation
+        clear_screen(0xffff00, render_buffer);
 
-        // render
+        // Render
         StretchDIBits(
             hdc, // canvas
             0, 0, // position
