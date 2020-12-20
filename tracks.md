@@ -1,1 +1,1 @@
-[ ] - Running window need to be changed at pool events fetch
+- [ ] Running window need to be changed at pool events fetch
