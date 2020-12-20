@@ -1,5 +1,6 @@
-# Game Window Mannager
-Helps you to create and mannage windows.h API windows in the most friendly way possible
+# Game Window Mannager 🖥
+Helps you to create and manage windows.h API in the most user-friendly way possible.<br/>
+Perfect to indie game developers that want to abstract syntax for your games.
 
 **Usage**
 ```c
