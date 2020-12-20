@@ -1,5 +1,5 @@
-# game-window
-Game window mannager for c
+# Game Window Mannager
+Helps you to create and mannage windows.h API windows in the most friendly way possible
 
 **Usage**
 ```c
