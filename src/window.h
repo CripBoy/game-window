@@ -1,6 +1,11 @@
 #ifndef WINDOW_H
 #define WINDOW_H
+
+#define WELCOME "Game Window"
+#define VERSION "V1.0.0"
+
 #include <windows.h>
+#include "./util.h"
 
 typedef struct {
     char * title;
@@ -10,7 +15,7 @@ typedef struct {
     HDC ws_canvas;
 } Window;
 
-Window new_window(char * title, int width, int height);
-void update_window(Window wind);
+Window create_window(char * title, int width, int height);
+void update_window();
 
 #endif
